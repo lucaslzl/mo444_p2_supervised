@@ -1,5 +1,3 @@
-# mo444_p2_supervised
-
 ## MO444/MC886 - Aprendizado de Máquina e Reconhecimento de Padrões
 
 Esse trabalho foi feito pelos seguintes membros:
