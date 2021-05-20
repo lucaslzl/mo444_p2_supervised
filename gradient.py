@@ -5,7 +5,7 @@ from tqdm import tqdm
 class LinearGradient:
     """
         Linear Gradient Descent
-        y = theta_0*x_0 + theta_1*x_1
+        y = theta_0*1 + theta_1*x_1 + theta_2*x_2
     """
 
 
@@ -15,7 +15,12 @@ class LinearGradient:
         self.x = x
         self.y = y
         self.alpha = alpha
-        self.thetas = [np.random.rand() for i in range(len(x))]
+        np.random.seed(42)
+        self.thetas = np.random.rand(len(x)+1)
+
+        # Add theta_0 column
+        self.data['joker'] = [1] * self.data.shape[0]
+        self.x.append('joker')
 
 
     def function(self, row):
@@ -42,7 +47,6 @@ class LinearGradient:
         for i, theta in enumerate(self.thetas):
 
             tmp_theta = theta - self.alpha * self.mse(i)
-
             tmp_thetas.append(tmp_theta)
 
         self.thetas = tmp_thetas
@@ -57,11 +61,22 @@ class LinearGradient:
     def get_thetas(self):
         return self.thetas
 
+    
+    def predict(self, values: list):
+
+        values.append(1)
+
+        res = 0
+        for i, theta in enumerate(self.thetas):
+            res += theta * values[i]
+
+        return res
+
 
 class PolinomialGradient:
     """
         Polinomial Gradient Descent
-        y = theta_0*(x_0**2) + theta_1*(x_1**2)
+        y = theta_0*1 + theta_1*(x_1**2) + theta_2*(x_2**2)
     """
 
 
@@ -71,7 +86,11 @@ class PolinomialGradient:
         self.x = x
         self.y = y
         self.alpha = alpha
-        self.thetas = [np.random.rand() for i in range(len(x))]
+        self.thetas = np.random.rand(len(x)+1)
+
+        # Add theta_0 column
+        self.data['joker'] = [1] * self.data.shape[0]
+        self.x.append('joker')
 
 
     def function(self, row):
@@ -112,3 +131,14 @@ class PolinomialGradient:
 
     def get_thetas(self):
         return self.thetas
+
+
+    def predict(self, values: list):
+
+        values.append(1)
+
+        res = 0
+        for i, theta in enumerate(self.thetas):
+            res += theta * (values[i]**2)
+
+        return res
