@@ -54,7 +54,7 @@ class LinearGradient:
 
     def fit(self, data):
 
-        for steps in tqdm(range(100)):
+        for steps in tqdm(range(1000)):
             self.update_theta()
 
 
@@ -76,7 +76,7 @@ class LinearGradient:
 class PolinomialGradient:
     """
         Polinomial Gradient Descent
-        y = theta_0*1 + theta_1*(x_1**2) + theta_2*(x_2**2)
+        y = theta_0*1 + theta_1*(x_1**2) + theta_2*(x_1)
     """
 
 
@@ -95,7 +95,7 @@ class PolinomialGradient:
 
     def function(self, row):
         
-        ys = [row[c]*self.thetas[i] for i, c in enumerate(self.x)]
+        ys = [self.thetas[i]*(row[c]**2) for i, c in enumerate(self.x)]
         ys = np.sum(ys)
         return (ys - row[self.y])
 
@@ -117,7 +117,6 @@ class PolinomialGradient:
         for i, theta in enumerate(self.thetas):
 
             tmp_theta = theta - self.alpha * self.mse(i)
-
             tmp_thetas.append(tmp_theta)
 
         self.thetas = tmp_thetas
@@ -125,7 +124,7 @@ class PolinomialGradient:
 
     def fit(self, data):
 
-        for steps in tqdm(range(100)):
+        for steps in tqdm(range(1000)):
             self.update_theta()
 
 
