@@ -3,7 +3,7 @@ import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
 
-from gradient import LinearGradient, PolinomialGradient
+from gradient import LinearGradient, PolynomialGradient
 
 
 def populate(results, 
@@ -14,7 +14,8 @@ def populate(results,
             a,
             ta,
             tb,
-            pred):
+            pred,
+            mses):
 
     results['Dataset'].append(dataset_name)
     results['Type'].append(Type)
@@ -24,6 +25,7 @@ def populate(results,
     results['Thetas A'].append(ta)
     results['Thetas B'].append(tb)
     results['Predicted'].append(pred)
+    results['MSE'].append(mses)
 
 
 def save_pickle(results, name='results.pickle'):
@@ -128,6 +130,42 @@ def plot_all(datasets, results):
         plot_line(dataset, xs, ys, zs, point_z)
 
 
+def plot_mses(results):
+
+    filtered = results[results['Y'] == 'x']
+    res = filtered.sort_values(by=['Dataset', 'Type', 'Y', 'Alpha'])
+    labels = ['0.01', '0.05', '0.001']
+
+    for i in range(0, res.shape[0], 3):
+
+        plt.clf()
+
+        fig, ax = plt.subplots(3)
+        
+        indx_p = 0
+
+        for j in range(i, i+3):
+
+            point = res.iloc[j]
+
+            # mses = np.abs(point['MSE'])
+            mses = point['MSE']
+
+            ax[indx_p].plot(range(len(mses)), mses, c='#57C3AD', alpha=0.9)
+            ax[indx_p].set_ylabel(f'Alpha: {labels[indx_p]}', fontdict={'fontweight':'bold'})
+
+            ax[indx_p].plot(range(len(mses)), [0]*len(mses), '--', c='#186152')
+
+            indx_p += 1
+
+        data = point['Dataset']
+        typ = point['Type']
+
+        ax[0].set_title(f'Base de Dados: {data.split(".")[0]} | Tipo: {typ}', fontdict={'fontweight':'bold'})
+
+        plt.savefig(f'plots/mses_{data}_{typ}.png')
+
+
 def describe_results():
 
     datasets = {}
@@ -142,9 +180,13 @@ def describe_results():
 
     results = load_pickle()
     results = pd.DataFrame(results)
-    print(results)
 
-    plot_all(datasets, results)
+    # plot_all(datasets, results)
+    plot_mses(results)
+
+    results.pop('MSE')
+
+    # print(results)
 
 
 def run_experiment():
@@ -156,7 +198,8 @@ def run_experiment():
                 'Alpha': [],
                 'Thetas A': [], 
                 'Thetas B': [],
-                'Predicted': []}
+                'Predicted': [],
+                'MSE': []}
 
     for dataset in ['./datasets/kick1.dat', './datasets/kick2.dat']:
 
@@ -178,6 +221,7 @@ def run_experiment():
             thetas_b = lg.get_thetas()
 
             pred = lg.predict([0])
+            mses = lg.get_mse()
 
             populate(results,
                     dataset_name,
@@ -187,7 +231,8 @@ def run_experiment():
                     alpha,
                     thetas_a,
                     thetas_b,
-                    pred)
+                    pred,
+                    mses)
 
             ###############################
             ### LinearGradient Y / X    ###
@@ -199,6 +244,7 @@ def run_experiment():
             thetas_b = lg.get_thetas()
 
             pred = lg.predict([0])
+            mses = lg.get_mse()
 
             populate(results,
                     dataset_name,
@@ -208,18 +254,20 @@ def run_experiment():
                     alpha,
                     thetas_a,
                     thetas_b,
-                    pred)
+                    pred,
+                    mses)
 
             ################################
             ### PolinomialGradient Y / Z ###
             ################################
-            pg = PolinomialGradient(df, x=['y'], y='z', alpha=alpha)
+            pg = PolynomialGradient(df, x=['y'], y='z', alpha=alpha)
             thetas_a = pg.get_thetas()
 
             pg.fit(df)
             thetas_b = pg.get_thetas()
 
             pred = pg.predict([0])
+            mses = lg.get_mse()
 
             populate(results,
                     dataset_name,
@@ -229,18 +277,20 @@ def run_experiment():
                     alpha,
                     thetas_a,
                     thetas_b,
-                    pred)
+                    pred,
+                    mses)
 
             ################################
             ### PolinomialGradient Y / X ###
             ################################
-            pg = PolinomialGradient(df, x=['y'], y='x', alpha=alpha)
+            pg = PolynomialGradient(df, x=['y'], y='x', alpha=alpha)
             thetas_a = pg.get_thetas()
 
             pg.fit(df)
             thetas_b = pg.get_thetas()
 
             pred = pg.predict([0])
+            mses = lg.get_mse()
 
             populate(results,
                     dataset_name,
@@ -250,7 +300,8 @@ def run_experiment():
                     alpha,
                     thetas_a,
                     thetas_b,
-                    pred)
+                    pred,
+                    mses)
 
     save_pickle(results)
 

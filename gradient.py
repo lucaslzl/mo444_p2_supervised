@@ -22,6 +22,8 @@ class LinearGradient:
         self.data['joker'] = [1] * self.data.shape[0]
         self.x.append('joker')
 
+        self.calculated_mse = []
+
 
     def function(self, row):
         
@@ -37,7 +39,11 @@ class LinearGradient:
         for indx, row in self.data.iterrows():
             summ += self.function(row) * row[self.x[i]]
 
-        return summ / self.data.shape[0]
+        result = summ / self.data.shape[0]
+
+        self.calculated_mse.append(result)
+
+        return result
 
 
     def update_theta(self):
@@ -71,9 +77,13 @@ class LinearGradient:
             res += theta * values[i]
 
         return res
+    
+    
+    def get_mse(self):
+        return self.calculated_mse
 
 
-class PolinomialGradient:
+class PolynomialGradient:
     """
         Polinomial Gradient Descent
         y = theta_0*1 + theta_1*(x_1**2) + theta_2*(x_1)
@@ -92,6 +102,8 @@ class PolinomialGradient:
         self.data['joker'] = [1] * self.data.shape[0]
         self.x.append('joker')
 
+        self.calculated_mse = []
+
 
     def function(self, row):
         
@@ -107,7 +119,11 @@ class PolinomialGradient:
         for indx, row in self.data.iterrows():
             summ += self.function(row) * row[self.x[i]]**2
 
-        return summ / self.data.shape[0]
+        result = summ / self.data.shape[0]
+
+        self.calculated_mse.append(result)
+
+        return result
 
 
     def update_theta(self):
@@ -141,3 +157,7 @@ class PolinomialGradient:
             res += theta * (values[i]**2)
 
         return res
+
+    
+    def get_mse(self):
+        return self.calculated_mse
