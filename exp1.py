@@ -83,8 +83,10 @@ def plot_df(df, ax):
     ax.set_ylim(-2.2, 0)
     ax.set_zlim(0, 0.5)
 
-    ax.plot([-2.5, -2.5, 2.5, 2.5], [0, -1, -1, 0], zdir='z', zs=0, c='#005660')
+    # ax.plot([-2.5, -2.5, 2.5, 2.5], [0, -1, -1, 0], zdir='z', zs=0, c='#005660')
     ax.plot([-1.25, -1.25, 1.25, 1.25], [0, 0.2, 0.2, 0], zdir='z', zs=0, c='#005660')
+    ax.plot([-3, -3, 3, 3], [0.0, 0.3, 0.3, 0.0], zdir='y', zs=0, c='#005660')
+    ax.plot([-1, -1, 1, 1], [0.0, 0.5, 0.5, 0.0], zdir='y', zs=0, c='#19cbe0')
     ax.plot([-3, 3], [0, 0.0], zdir='z', zs=0, c='#005660')
 
     ax.xaxis.pane.fill = False
@@ -96,28 +98,43 @@ def plot_df(df, ax):
     ax.grid(False)
 
 
-def plot_line(df, xs, ys, zs, point):
+def plot_line(df, xs, ys, zs, point, title):
+
+    plt.clf()
 
     # Configure 3D
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(8,8))
     ax = plt.subplot(111, projection='3d')
 
     plot_df(df, ax)
 
-    first_point = list(df.iloc[0][['x', 'y', 'z']])
+    # first_point = list(df.iloc[0][['x', 'y', 'z']])
 
     ax.plot(xs, ys, zs, c='#57C3AD')
+
+    plt.title(title, {'fontweight': 'bold'})
 
     # plt.show()
     data = point['Dataset']
     typ = point['Type']
     alpha = point['Alpha']
+    plt.tight_layout()
     plt.savefig(f'plots/{data}_{typ}_{alpha}.png')
-
 
 
 def plot_all(datasets, results):
 
+    titles = []
+
+    for d in ['kick1', 'kick2']:
+
+        for a in ['0.01', '0.05', '0.001']:
+
+            for t in ['LinearGradient', 'PolinomialGradient']:
+
+                titles.append(f'Base de Dados: {d} | Tipo: {t} | Alpha: {a}')
+
+    indx_title = 0
     for i in range(0, results.shape[0], 2):
 
         dataset = datasets[results.iloc[i]['Dataset']]
@@ -127,7 +144,9 @@ def plot_all(datasets, results):
 
         xs, ys, zs = prepare_info(dataset, point_z, point_x)
 
-        plot_line(dataset, xs, ys, zs, point_z)
+        plot_line(dataset, xs, ys, zs, point_z, titles[indx_title])
+
+        indx_title += 1
 
 
 def plot_mses(results):
@@ -181,12 +200,11 @@ def describe_results():
     results = load_pickle()
     results = pd.DataFrame(results)
 
-    # plot_all(datasets, results)
+    plot_all(datasets, results)
     plot_mses(results)
 
     results.pop('MSE')
-
-    # print(results)
+    print(results)
 
 
 def run_experiment():
