@@ -3,8 +3,7 @@ import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
 
-from gradient import LinearGradient, PolynomialGradient
-
+from src.gradient import LinearGradient, PolynomialGradient
 
 def populate(results, 
             dataset_name,
@@ -28,13 +27,13 @@ def populate(results,
     results['MSE'].append(mses)
 
 
-def save_pickle(results, name='results.pickle'):
+def save_pickle(results, name='src/results.pickle'):
 
     with open(name, 'wb') as handle:
         pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-def load_pickle(name='results.pickle'):
+def load_pickle(name='src/results.pickle'):
 
     with open(name, 'rb') as handle:
         return pickle.load(handle)
@@ -326,7 +325,7 @@ def run_experiment():
 
 def main():
 
-    # run_experiment()
+    run_experiment()
     describe_results()
 
 
